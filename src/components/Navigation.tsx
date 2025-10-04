@@ -1,14 +1,14 @@
-import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Gamepad2, AppWindow, Globe, HelpCircle, Settings, User } from "lucide-react";
 
 const navItems = [
-  { label: "Games", href: "/games" },
-  { label: "Apps", href: "/apps" },
-  { label: "Pr0xy", href: "/pr0xy" },
-  { label: "Account", href: "/account" },
-  { label: "Settings", href: "/settings" },
-  { label: "Help", href: "/help" },
+  { label: "Games", href: "/games", icon: Gamepad2 },
+  { label: "Apps", href: "/apps", icon: AppWindow },
+  { label: "Browser", href: "/browser", icon: Globe },
+  { label: "Help", href: "/help", icon: HelpCircle },
+  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Account", href: "/account", icon: User },
 ];
 
 export const Navigation = () => {
@@ -28,27 +28,31 @@ export const Navigation = () => {
 
           {/* Navigation Tabs */}
           <div className="flex items-center gap-1 bg-[hsl(var(--nav-background))] border border-[hsl(var(--nav-border))] rounded-full px-2 py-1.5 backdrop-blur-sm shadow-subtle">
-            {navItems.map((item, index) => (
-              <div key={item.label} className="flex items-center">
-                <Button
-                  variant={activeTab === item.label.toLowerCase() ? "nav-active" : "nav"}
-                  size="nav"
-                  asChild
-                >
-                  <Link to={item.href} className="relative">
-                    {item.label}
-                    {activeTab === item.label.toLowerCase() && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-full blur-xl -z-10" />
-                    )}
-                  </Link>
-                </Button>
-                
-                {/* Separator line */}
-                {index < navItems.length - 1 && (
-                  <div className="h-4 w-px bg-border/50 mx-1" />
-                )}
-              </div>
-            ))}
+            {navItems.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.label} className="flex items-center">
+                  <Button
+                    variant={activeTab === item.label.toLowerCase() ? "nav-active" : "nav"}
+                    size="nav"
+                    asChild
+                  >
+                    <Link to={item.href} className="relative flex items-center gap-2">
+                      <Icon className="w-4 h-4" />
+                      {item.label}
+                      {activeTab === item.label.toLowerCase() && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-full blur-xl -z-10" />
+                      )}
+                    </Link>
+                  </Button>
+                  
+                  {/* Separator line */}
+                  {index < navItems.length - 1 && (
+                    <div className="h-4 w-px bg-border/50 mx-1" />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

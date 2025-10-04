@@ -3,7 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Gamepad2 } from "lucide-react";
+import { Search, Gamepad2, Flame, TrendingUp, Sparkles, Star } from "lucide-react";
 
 const games = [
   { id: 1, name: "Slope", category: "Action", popularity: "hot" },
@@ -20,16 +20,38 @@ const games = [
   { id: 12, name: "Tunnel Rush", category: "Action", popularity: "popular" },
 ];
 
-const getBadgeVariant = (popularity: string) => {
+const getBadgeConfig = (popularity: string) => {
   switch (popularity) {
     case "hot":
-      return "default";
+      return { 
+        variant: "default" as const, 
+        icon: Flame, 
+        className: "bg-red-600 text-white border-red-500 animate-pulse"
+      };
     case "popular":
-      return "secondary";
+      return { 
+        variant: "secondary" as const, 
+        icon: Star, 
+        className: "bg-yellow-600 text-white border-yellow-500"
+      };
     case "trending":
-      return "outline";
+      return { 
+        variant: "outline" as const, 
+        icon: TrendingUp, 
+        className: "bg-blue-600 text-white border-blue-500"
+      };
+    case "new":
+      return { 
+        variant: "secondary" as const, 
+        icon: Sparkles, 
+        className: "bg-green-600 text-white border-green-500"
+      };
     default:
-      return "secondary";
+      return { 
+        variant: "secondary" as const, 
+        icon: Star, 
+        className: ""
+      };
   }
 };
 
@@ -48,9 +70,8 @@ const Games = () => {
       <main className="pt-24 px-6 pb-12 max-w-7xl mx-auto">
         {/* Header */}
         <div className="space-y-6 mb-12 animate-fade-in">
-          <h1 className="text-5xl font-bold">
-            <span className="text-foreground">Games</span>
-            <span className="text-primary">.</span>
+          <h1 className="text-4xl font-bold text-foreground">
+            Games
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl">
             Play unblocked games anywhere, anytime. No restrictions, just fun.
@@ -77,14 +98,19 @@ const Games = () => {
               style={{ animationDelay: `${index * 30}ms` }}
             >
               {/* Popularity Badge */}
-              {game.popularity && (
-                <Badge 
-                  variant={getBadgeVariant(game.popularity)}
-                  className="absolute top-2 right-2 text-xs uppercase z-10"
-                >
-                  {game.popularity}
-                </Badge>
-              )}
+              {game.popularity && (() => {
+                const config = getBadgeConfig(game.popularity);
+                const BadgeIcon = config.icon;
+                return (
+                  <Badge 
+                    variant={config.variant}
+                    className={`absolute top-2 right-2 text-xs uppercase z-10 flex items-center gap-1 ${config.className}`}
+                  >
+                    <BadgeIcon className="w-3 h-3" />
+                    {game.popularity}
+                  </Badge>
+                );
+              })()}
 
               {/* Game Icon Placeholder */}
               <div className="aspect-square mb-3 rounded-lg bg-secondary/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
