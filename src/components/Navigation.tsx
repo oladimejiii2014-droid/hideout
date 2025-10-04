@@ -16,18 +16,18 @@ export const Navigation = () => {
   const activeTab = location.pathname.slice(1) || "home";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 animate-slide-in-top bg-card/50 backdrop-blur-sm border-b border-border/50">
+    <nav className="fixed top-0 left-0 right-0 z-50 animate-slide-in-top">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo with rounded container */}
-          <Link to="/" className="bg-card/50 backdrop-blur-sm rounded-2xl px-6 py-3 border border-border/50 hover:border-primary/30 transition-colors">
+          <Link to="/" className="bg-card/50 backdrop-blur-md rounded-2xl px-6 py-3 border border-border/50 hover:border-primary/30 transition-colors">
             <span className="text-2xl font-bold text-foreground">
               Hideout<span className="text-primary">.</span>
             </span>
           </Link>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-1 bg-[hsl(var(--nav-background))] border border-[hsl(var(--nav-border))] rounded-full px-2 py-1.5 backdrop-blur-sm shadow-subtle">
+          <div className="flex items-center gap-1 bg-card/50 backdrop-blur-md border border-border/50 rounded-full px-2 py-1.5 shadow-subtle">
             {navItems.map((item, index) => {
               const Icon = item.icon;
               return (

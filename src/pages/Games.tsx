@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
-import * as LucideIcons from "lucide-react";
 import gamesData from "@/data/games.json";
 
 type Game = {
@@ -42,9 +42,15 @@ const getBadgeConfig = (popularity: string) => {
 };
 
 const Games = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [popularityFilter, setPopularityFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
+
+  const handleGameClick = (gameName: string) => {
+    const gameSlug = gameName.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/games?game=${gameSlug}`);
+  };
 
   const filteredGames = games.filter((game) => {
     const matchesSearch = game.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -131,16 +137,16 @@ const Games = () => {
         {/* Games Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredGames.map((game, index) => {
-            const IconComponent = (LucideIcons as any)[game.icon] || LucideIcons.Gamepad2;
             return (
               <Card
                 key={game.id}
-                className="group p-6 bg-gradient-to-br from-card to-card/50 border-border hover:border-primary/20 transition-all duration-300 cursor-pointer animate-fade-in"
+                onClick={() => handleGameClick(game.name)}
+                className="group p-6 bg-gradient-to-br from-card to-card/50 border-border hover:border-border/80 hover:scale-105 transition-all duration-300 cursor-pointer animate-fade-in"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <div className="flex flex-col gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:from-primary/25 group-hover:to-primary/15 transition-all">
-                    <IconComponent className="w-8 h-8 text-primary" />
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden">
+                    <img src={game.icon} alt={game.name} className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold mb-2 group-hover:text-primary/90 transition-colors">
