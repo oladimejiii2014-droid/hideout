@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.delete-inactive-users]
 verify_jwt = false
+
+[functions.update-password]
+verify_jwt = false

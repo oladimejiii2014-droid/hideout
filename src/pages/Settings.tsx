@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -7,31 +7,113 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Settings as SettingsIcon, Bell, Shield, Palette, Database } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+type SettingsData = {
+  reducedMotion: boolean;
+  fontSize: 'small' | 'medium' | 'large';
+  highContrast: boolean;
+  notificationsEnabled: boolean;
+  generalNotifications: boolean;
+};
 
 const Settings = () => {
-  const [darkMode, setDarkMode] = useState(true);
-  const [animations, setAnimations] = useState(true);
-  const [notifyNewGames, setNotifyNewGames] = useState(true);
-  const [notifyUpdates, setNotifyUpdates] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [settings, setSettings] = useState<SettingsData>({
+    reducedMotion: false,
+    fontSize: 'medium',
+    highContrast: false,
+    notificationsEnabled: false,
+    generalNotifications: true,
+  });
+
+  useEffect(() => {
+    // Load user
+    const storedUser = localStorage.getItem('hideout_user') || sessionStorage.getItem('hideout_user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
+    // Load settings from localStorage
+    const savedSettings = localStorage.getItem('hideout_settings');
+    if (savedSettings) {
+      setSettings(JSON.parse(savedSettings));
+    }
+
+    // Check notification permission
+    if ('Notification' in window) {
+      setSettings(prev => ({
+        ...prev,
+        notificationsEnabled: Notification.permission === 'granted'
+      }));
+    }
+  }, []);
+
+  const saveSettings = async (newSettings: SettingsData) => {
+    setSettings(newSettings);
+    
+    // Save to localStorage
+    localStorage.setItem('hideout_settings', JSON.stringify(newSettings));
+    
+    // Note: Settings are saved to localStorage only
+    // Future: Could add settings column to users table if needed
+  };
+
+  const handleSettingChange = (key: keyof SettingsData, value: any) => {
+    const newSettings = { ...settings, [key]: value };
+    saveSettings(newSettings);
+    toast.success("Setting updated");
+  };
+
+  const handleRequestNotifications = async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        setSettings(prev => ({ ...prev, notificationsEnabled: true }));
+        toast.success("Notifications enabled!");
+      } else {
+        toast.error("Notification permission denied");
+      }
+    }
+  };
 
   const handleClearCache = () => {
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => caches.delete(name));
+      });
+    }
     toast.success("Cache cleared successfully!");
   };
 
   const handleManageCookies = () => {
-    toast.info("Cookie preferences opened");
+    const storedUser = localStorage.getItem('hideout_user') || sessionStorage.getItem('hideout_user');
+    
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    if (storedUser) {
+      toast.info("Cookies cleared - you have been logged out");
+      window.location.href = '/';
+    } else {
+      toast.success("Cookies cleared successfully!");
+    }
   };
 
   const handleResetDefaults = () => {
-    setDarkMode(true);
-    setAnimations(true);
-    setNotifyNewGames(true);
-    setNotifyUpdates(true);
+    const defaultSettings: SettingsData = {
+      reducedMotion: false,
+      fontSize: 'medium',
+      highContrast: false,
+      notificationsEnabled: settings.notificationsEnabled,
+      generalNotifications: true,
+    };
+    saveSettings(defaultSettings);
     toast.success("Settings reset to defaults");
   };
 
   const handleSaveChanges = () => {
-    toast.success("Settings saved successfully!");
+    toast.success("All settings saved successfully!");
   };
 
   return (
@@ -63,17 +145,39 @@ const Settings = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Dark Mode</Label>
-                  <p className="text-sm text-muted-foreground">Use dark theme</p>
+                  <Label>Reduced Motion</Label>
+                  <p className="text-sm text-muted-foreground">Minimize animations</p>
                 </div>
-                <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+                <Switch 
+                  checked={settings.reducedMotion} 
+                  onCheckedChange={(v) => handleSettingChange('reducedMotion', v)} 
+                />
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Animations</Label>
-                  <p className="text-sm text-muted-foreground">Enable smooth animations</p>
+                  <Label>High Contrast</Label>
+                  <p className="text-sm text-muted-foreground">Increase color contrast</p>
                 </div>
-                <Switch checked={animations} onCheckedChange={setAnimations} />
+                <Switch 
+                  checked={settings.highContrast} 
+                  onCheckedChange={(v) => handleSettingChange('highContrast', v)} 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Font Size</Label>
+                <div className="flex gap-2">
+                  {(['small', 'medium', 'large'] as const).map((size) => (
+                    <Button
+                      key={size}
+                      variant={settings.fontSize === size ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => handleSettingChange('fontSize', size)}
+                      className="capitalize"
+                    >
+                      {size}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
           </Card>
@@ -93,12 +197,12 @@ const Settings = () => {
                 </div>
                 <Switch disabled />
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between opacity-50">
                 <div className="space-y-0.5">
                   <Label>Block Trackers</Label>
-                  <p className="text-sm text-muted-foreground">Prevent tracking scripts</p>
+                  <p className="text-sm text-muted-foreground">Currently unavailable</p>
                 </div>
-                <Switch disabled defaultChecked />
+                <Switch disabled />
               </div>
             </div>
           </Card>
@@ -110,22 +214,28 @@ const Settings = () => {
               <h2 className="text-lg sm:text-xl font-semibold">Notifications</h2>
             </div>
             <Separator className="mb-4" />
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>New Games</Label>
-                  <p className="text-sm text-muted-foreground">Notify about new game releases</p>
-                </div>
-                <Switch checked={notifyNewGames} onCheckedChange={setNotifyNewGames} />
+            {!settings.notificationsEnabled ? (
+              <div className="text-center py-6 space-y-4">
+                <p className="text-muted-foreground">Enable notifications to receive updates</p>
+                <Button onClick={handleRequestNotifications} className="gap-2">
+                  <Bell className="w-4 h-4" />
+                  Allow Notifications
+                </Button>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Updates</Label>
-                  <p className="text-sm text-muted-foreground">Get notified about updates</p>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Enable Notifications</Label>
+                    <p className="text-sm text-muted-foreground">Receive general notifications</p>
+                  </div>
+                  <Switch 
+                    checked={settings.generalNotifications} 
+                    onCheckedChange={(v) => handleSettingChange('generalNotifications', v)} 
+                  />
                 </div>
-                <Switch checked={notifyUpdates} onCheckedChange={setNotifyUpdates} />
               </div>
-            </div>
+            )}
           </Card>
 
           {/* Data Settings */}
@@ -145,10 +255,10 @@ const Settings = () => {
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Cookies</Label>
-                  <p className="text-sm text-muted-foreground">Manage cookie preferences</p>
+                  <Label>Cookies & Storage</Label>
+                  <p className="text-sm text-muted-foreground">⚠️ This will log you out</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={handleManageCookies}>Manage</Button>
+                <Button variant="outline" size="sm" onClick={handleManageCookies}>Clear Data</Button>
               </div>
             </div>
           </Card>

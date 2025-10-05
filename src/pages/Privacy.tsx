@@ -100,7 +100,32 @@ const Privacy = () => {
               </section>
 
               <section>
-                <h2 className="text-2xl font-bold mb-3">10. Contact Us</h2>
+                <h2 className="text-2xl font-bold mb-3">10. Third-Party Services</h2>
+                <p className="mb-2">Our service may contain links to third-party websites or services:</p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>We are not responsible for third-party privacy practices</li>
+                  <li>Review privacy policies of any third-party sites you visit</li>
+                  <li>We do not control or endorse third-party content</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-3">11. Data Breach Notification</h2>
+                <p>In the event of a data breach that may compromise your information, we will notify affected users via email or through a prominent notice on our service within a reasonable timeframe as required by law.</p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-3">12. International Users</h2>
+                <p>If you are accessing our service from outside your jurisdiction, please be aware that your information may be transferred to, stored, and processed in different countries. By using our service, you consent to such transfers.</p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-3">13. California Privacy Rights</h2>
+                <p>California residents have specific rights under the California Consumer Privacy Act (CCPA) including the right to know what personal information is collected and the right to request deletion of personal information. Contact us to exercise these rights.</p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-3">14. Contact Us</h2>
                 <p>For privacy-related questions or concerns, contact us at: <a href="mailto:hideout-network-buisness@hotmail.com" className="text-primary hover:underline">hideout-network-buisness@hotmail.com</a></p>
               </section>
             </div>

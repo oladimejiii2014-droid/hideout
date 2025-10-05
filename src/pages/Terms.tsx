@@ -74,7 +74,50 @@ const Terms = () => {
               </section>
 
               <section>
-                <h2 className="text-2xl font-bold mb-3">8. Contact</h2>
+                <h2 className="text-2xl font-bold mb-3">8. Intellectual Property</h2>
+                <p className="mb-2">All content and functionality on Hideout Network, including but not limited to:</p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>Website design, layout, and graphics</li>
+                  <li>Software code and functionality</li>
+                  <li>Trademarks, logos, and branding materials</li>
+                </ul>
+                <p className="mt-3">Are the property of Hideout Network and are protected by copyright and other intellectual property laws.</p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-3">9. Disclaimer of Warranties</h2>
+                <p className="mb-2">THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND:</p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>We make no guarantees about service uptime or availability</li>
+                  <li>We are not responsible for content accuracy or completeness</li>
+                  <li>We do not warrant that the service will be error-free or uninterrupted</li>
+                  <li>We are not liable for any malware, viruses, or other harmful components</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-3">10. Indemnification</h2>
+                <p>You agree to indemnify and hold harmless Hideout Network, its operators, and affiliates from any claims, damages, losses, liabilities, and expenses (including legal fees) arising from your use of the service or violation of these terms.</p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-3">11. Termination</h2>
+                <p className="mb-2">We reserve the right to:</p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>Terminate or suspend your account at any time without notice</li>
+                  <li>Remove content that violates our policies</li>
+                  <li>Ban users for inappropriate behavior or Terms violations</li>
+                  <li>Modify or discontinue the service at any time</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-3">12. Governing Law</h2>
+                <p>These Terms shall be governed by and construed in accordance with applicable laws. Any disputes shall be resolved in appropriate courts with jurisdiction.</p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-3">13. Contact</h2>
                 <p>For questions or concerns, contact us at: <a href="mailto:hideout-network-buisness@hotmail.com" className="text-primary hover:underline">hideout-network-buisness@hotmail.com</a></p>
               </section>
             </div>

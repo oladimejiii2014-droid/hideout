@@ -3,8 +3,15 @@ import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search } from "lucide-react";
-import * as LucideIcons from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Filter } from "lucide-react";
+import * as Icons from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import appsData from "@/data/apps.json";
 
 type App = {
@@ -19,58 +26,92 @@ const apps: App[] = appsData;
 
 const Apps = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
-  const filteredApps = apps.filter((app) =>
-    app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    app.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredApps = apps.filter((app) => {
+    const matchesSearch = 
+      app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      app.category.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || app.category.toLowerCase() === categoryFilter.toLowerCase();
+    return matchesSearch && matchesCategory;
+  });
+
+  const allCategories = Array.from(new Set(apps.map(app => app.category)));
+
+  const handleAppClick = (link: string) => {
+    window.open(link, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="pt-24 px-6 pb-12 max-w-7xl mx-auto">
+      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-7xl mx-auto">
         {/* Header */}
         <div className="space-y-6 mb-12 animate-fade-in">
           <h1 className="text-4xl font-bold text-foreground">Apps</h1>
           <p className="text-muted-foreground text-lg max-w-2xl">
-            Access popular apps and tools directly from your browser.
+            Access your favorite apps and services right from your browser.
           </p>
 
-          {/* Search */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input 
-              placeholder="Search apps..." 
-              className="pl-10 bg-card border-border transition-colors"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          {/* Search and Filters */}
+          <div className="flex gap-3 max-w-2xl">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Input 
+                placeholder="Search apps..." 
+                className="pl-10 bg-card border-border transition-colors"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            {/* Category Filter */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2 bg-card border-border">
+                  <Filter className="w-4 h-4" />
+                  {categoryFilter === "all" ? "Category" : categoryFilter}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-card border-border z-50">
+                <DropdownMenuItem onClick={() => setCategoryFilter("all")}>
+                  All
+                </DropdownMenuItem>
+                {allCategories.map((category) => (
+                  <DropdownMenuItem key={category} onClick={() => setCategoryFilter(category)}>
+                    {category}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
         {/* Apps Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredApps.map((app, index) => {
-            const IconComponent = (LucideIcons as any)[app.icon] || LucideIcons.AppWindow;
+            const IconComponent = (Icons as any)[app.icon] || Icons.AppWindow;
+            
             return (
               <Card
                 key={app.name}
-                className="group p-6 bg-card border-border hover:border-primary/20 transition-all duration-300 cursor-pointer animate-fade-in"
+                onClick={() => handleAppClick(app.link)}
+                className="group p-6 bg-gradient-to-br from-card to-card/50 border-border hover:border-border/80 hover:scale-105 transition-all duration-300 cursor-pointer animate-fade-in"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/20 transition-all">
-                    <IconComponent className="w-6 h-6 text-primary" />
+                <div className="flex flex-col gap-4">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <IconComponent className="w-8 h-8 text-primary" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold mb-1 group-hover:text-primary/80 transition-colors">
+                  <div>
+                    <h3 className="text-xl font-bold mb-2 group-hover:text-primary/90 transition-colors">
                       {app.name}
                     </h3>
-                    <Badge variant="secondary" className="mb-2 text-xs">
+                    <p className="text-sm text-muted-foreground mb-3">{app.description}</p>
+                    <Badge variant="secondary" className="text-xs">
                       {app.category}
                     </Badge>
-                    <p className="text-sm text-muted-foreground">{app.description}</p>
                   </div>
                 </div>
               </Card>
@@ -81,7 +122,7 @@ const Apps = () => {
         {/* No results */}
         {filteredApps.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No apps found matching "{searchQuery}"</p>
+            <p className="text-muted-foreground">No apps found matching your search</p>
           </div>
         )}
       </main>

@@ -214,16 +214,20 @@ const Games = () => {
             <div className="w-full bg-card rounded-lg border border-border p-4 flex gap-3">
               <Button
                 onClick={handleFullscreen}
-                className="gap-2"
+                className="gap-2 hover:scale-105 transition-transform"
               >
                 <Maximize className="w-4 h-4" />
                 Fullscreen
               </Button>
               <Button
                 onClick={handleFavorite}
-                className={`gap-2 ${isFavorited ? 'bg-yellow-500 hover:bg-yellow-600 text-black' : 'bg-yellow-500 hover:bg-yellow-600 text-black'}`}
+                className={`gap-2 transition-all duration-300 ${
+                  isFavorited 
+                    ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black shadow-lg shadow-yellow-500/50 scale-105' 
+                    : 'bg-gradient-to-r from-yellow-500/80 to-yellow-600/80 hover:from-yellow-500 hover:to-yellow-600 text-black hover:shadow-lg hover:shadow-yellow-500/30 hover:scale-105'
+                }`}
               >
-                <Star className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
+                <Star className={`w-4 h-4 transition-all duration-300 ${isFavorited ? 'fill-current animate-pulse' : ''}`} />
                 {isFavorited ? 'Favorited' : 'Favorite'}
               </Button>
             </div>

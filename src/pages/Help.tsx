@@ -26,12 +26,7 @@ const Help = () => {
         </div>
 
         {/* Quick Links */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          <Card className="p-6 bg-card border-border hover:border-primary/20 transition-all cursor-pointer group">
-            <BookOpen className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
-            <h3 className="font-semibold mb-2">Documentation</h3>
-            <p className="text-sm text-muted-foreground">Browse our guides and tutorials</p>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
           <a href="https://discord.gg/HkbVraQH89" target="_blank" rel="noopener noreferrer">
             <Card className="p-6 bg-card border-border hover:border-primary/20 transition-all cursor-pointer group">
               <MessageCircle className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
