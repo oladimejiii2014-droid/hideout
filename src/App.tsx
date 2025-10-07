@@ -41,15 +41,15 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        {contextMenu && (
-          <ContextMenu
-            x={contextMenu.x}
-            y={contextMenu.y}
-            isOnBrowser={contextMenu.isOnBrowser}
-            onClose={() => setContextMenu(null)}
-          />
-        )}
         <BrowserRouter>
+          {contextMenu && (
+            <ContextMenu
+              x={contextMenu.x}
+              y={contextMenu.y}
+              isOnBrowser={contextMenu.isOnBrowser}
+              onClose={() => setContextMenu(null)}
+            />
+          )}
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/games" element={<Games />} />
