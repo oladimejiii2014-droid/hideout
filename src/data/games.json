@@ -1590,7 +1590,7 @@
   },
   {
     "name": "Soccer Random",
-    "icon": "https://hideout-games.vercel.app/soccer-random/splash.png",
+    "icon": "https://hideout-games.vercel.app/soccer-random/unnamed.png",
     "popularity": [],
     "categories": ["Sports", "Arcade"],
     "gameLink": "https://hideout-games.vercel.app/soccer-random/index.html"
