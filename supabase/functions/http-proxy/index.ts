@@ -24,11 +24,33 @@ serve(async (req) => {
       });
     }
 
-    // Basic validation to prevent SSRF to internal networks
+    // SSRF protection - block internal networks
     let target: URL;
     try {
       target = new URL(urlParam);
       if (!/^https?:$/.test(target.protocol)) throw new Error("Invalid protocol");
+      
+      // Block private IP ranges and localhost
+      const hostname = target.hostname.toLowerCase();
+      const blockedPatterns = [
+        /^localhost$/i,
+        /^127\./,
+        /^10\./,
+        /^172\.(1[6-9]|2[0-9]|3[01])\./,
+        /^192\.168\./,
+        /^169\.254\./,  // AWS/GCP metadata
+        /^0\./,
+        /^\[?::1\]?$/,  // IPv6 localhost
+        /^\[?fe80:/i,   // IPv6 link-local
+        /^\[?fc00:/i,   // IPv6 unique local
+      ];
+      
+      if (blockedPatterns.some(pattern => pattern.test(hostname))) {
+        return new Response("Blocked: Cannot access internal resources", {
+          status: 403,
+          headers: corsHeaders
+        });
+      }
     } catch (_e) {
       return new Response("Invalid URL", { status: 400, headers: corsHeaders });
     }
