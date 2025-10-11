@@ -11,8 +11,10 @@ interface DevToolsProps {
 export const DevTools = ({ onClose }: DevToolsProps) => {
   const [consoleMessages] = useState<string[]>([
     "DevTools initialized",
-    "Press F12 or Ctrl+Shift+I to toggle",
+    "Browser environment active",
   ]);
+  const [height, setHeight] = useState(400);
+  const [isResizing, setIsResizing] = useState(false);
 
   const getLocalStorageItems = () => {
     const items: { key: string; value: string }[] = [];
@@ -29,8 +31,40 @@ export const DevTools = ({ onClose }: DevToolsProps) => {
     return document.cookie.split(';').map(c => c.trim()).filter(c => c);
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+    
+    const startY = e.clientY;
+    const startHeight = height;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const deltaY = startY - e.clientY;
+      const newHeight = Math.max(200, Math.min(window.innerHeight - 100, startHeight + deltaY));
+      setHeight(newHeight);
+    };
+    
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-[400px] bg-card border-t border-border shadow-2xl z-[9999] flex flex-col">
+    <div 
+      className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-2xl z-[9999] flex flex-col"
+      style={{ height: `${height}px` }}
+    >
+      {/* Resize Handle */}
+      <div
+        className={`h-1 bg-border hover:bg-primary cursor-ns-resize transition-colors ${isResizing ? 'bg-primary' : ''}`}
+        onMouseDown={handleMouseDown}
+      />
+      
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
         <div className="flex items-center gap-2">
@@ -43,8 +77,12 @@ export const DevTools = ({ onClose }: DevToolsProps) => {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="console" className="flex-1 flex flex-col">
+      <Tabs defaultValue="elements" className="flex-1 flex flex-col overflow-hidden">
         <TabsList className="w-full justify-start rounded-none border-b bg-background">
+          <TabsTrigger value="elements" className="gap-2">
+            <FileText className="w-4 h-4" />
+            Elements
+          </TabsTrigger>
           <TabsTrigger value="console" className="gap-2">
             <Terminal className="w-4 h-4" />
             Console
@@ -57,13 +95,28 @@ export const DevTools = ({ onClose }: DevToolsProps) => {
             <Cookie className="w-4 h-4" />
             Cookies
           </TabsTrigger>
-          <TabsTrigger value="html" className="gap-2">
-            <FileText className="w-4 h-4" />
-            Elements
-          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="console" className="flex-1 m-0 p-0">
+        <TabsContent value="elements" className="flex-1 m-0 p-0 overflow-hidden">
+          <ScrollArea className="h-full p-4">
+            <div className="font-mono text-xs">
+              <div className="text-muted-foreground">
+                &lt;html&gt;<br />
+                &nbsp;&nbsp;&lt;head&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Hideout Browser&lt;/title&gt;<br />
+                &nbsp;&nbsp;&lt;/head&gt;<br />
+                &nbsp;&nbsp;&lt;body&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;div id="browser-content"&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;<br />
+                &nbsp;&nbsp;&lt;/body&gt;<br />
+                &lt;/html&gt;
+              </div>
+            </div>
+          </ScrollArea>
+        </TabsContent>
+
+        <TabsContent value="console" className="flex-1 m-0 p-0 overflow-hidden">
           <ScrollArea className="h-full p-4">
             <div className="space-y-2 font-mono text-sm">
               {consoleMessages.map((msg, i) => (
@@ -71,14 +124,11 @@ export const DevTools = ({ onClose }: DevToolsProps) => {
                   &gt; {msg}
                 </div>
               ))}
-              <div className="text-yellow-500 mt-4">
-                ⚠ Note: This is a simulated console. For full browser DevTools, press F12
-              </div>
             </div>
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="storage" className="flex-1 m-0 p-0">
+        <TabsContent value="storage" className="flex-1 m-0 p-0 overflow-hidden">
           <ScrollArea className="h-full p-4">
             <div className="space-y-4">
               <div>
@@ -99,7 +149,7 @@ export const DevTools = ({ onClose }: DevToolsProps) => {
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="cookies" className="flex-1 m-0 p-0">
+        <TabsContent value="cookies" className="flex-1 m-0 p-0 overflow-hidden">
           <ScrollArea className="h-full p-4">
             <div className="space-y-2">
               {getCookies().map((cookie, i) => (
@@ -110,26 +160,6 @@ export const DevTools = ({ onClose }: DevToolsProps) => {
               {getCookies().length === 0 && (
                 <div className="text-muted-foreground text-sm">No cookies found</div>
               )}
-            </div>
-          </ScrollArea>
-        </TabsContent>
-
-        <TabsContent value="html" className="flex-1 m-0 p-0">
-          <ScrollArea className="h-full p-4">
-            <div className="font-mono text-xs">
-              <div className="text-muted-foreground">
-                &lt;html&gt;<br />
-                &nbsp;&nbsp;&lt;head&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Hideout Browser&lt;/title&gt;<br />
-                &nbsp;&nbsp;&lt;/head&gt;<br />
-                &nbsp;&nbsp;&lt;body&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;...<br />
-                &nbsp;&nbsp;&lt;/body&gt;<br />
-                &lt;/html&gt;
-              </div>
-              <div className="text-yellow-500 mt-4">
-                ⚠ For full HTML inspection, press F12 to open browser DevTools
-              </div>
             </div>
           </ScrollArea>
         </TabsContent>
