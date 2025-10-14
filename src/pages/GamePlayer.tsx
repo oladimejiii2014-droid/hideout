@@ -111,20 +111,12 @@ const GamePlayer = () => {
     setIsFavorite(newIsFavorite);
     window.dispatchEvent(new CustomEvent('hideout:favorites-updated', { detail: { favorites: localFavorites } }));
 
-    // Sync to database if logged in - save to user_data table
+    // Sync to database if logged in
     if (user) {
-      try {
-        await (supabase as any)
-          .from('user_data')
-          .upsert({
-            user_id: user.id,
-            data_type: 'game_favorites',
-            data: localFavorites
-          }, {
-            onConflict: 'user_id,data_type'
-          });
-      } catch (error) {
-        console.error('Error syncing favorites:', error);
+      if (newIsFavorite) {
+        await (supabase as any).from('favorites').insert([{ user_id: user.id, game_name: game.name }]);
+      } else {
+        await (supabase as any).from('favorites').delete().eq('user_id', user.id).eq('game_name', game.name);
       }
     }
   };
