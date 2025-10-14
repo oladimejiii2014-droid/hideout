@@ -69,13 +69,22 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
     }
   };
 
-  const handleSaveToAccount = () => {
+  const handleSaveToAccount = async () => {
     if (!user) {
       toast.error("Please login to save data to your account");
       return;
     }
-    // The data is already being saved automatically by the browser component
-    toast.success("Data saved to account");
+    
+    try {
+      // Import and use the saveToAccount function
+      const { useUserData } = await import("@/hooks/use-user-data");
+      const { saveToAccount } = useUserData();
+      await saveToAccount();
+      toast.success("All data saved to account");
+    } catch (error) {
+      console.error('Error saving to account:', error);
+      toast.error("Failed to save data to account");
+    }
     onClose();
   };
 
@@ -84,13 +93,77 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
     setShowLogoutDialog(true);
   };
 
-  const confirmLogout = () => {
-    localStorage.removeItem('hideout_user');
-    sessionStorage.removeItem('hideout_user');
-    toast.success("Logged out successfully");
-    setShowLogoutDialog(false);
-    onClose();
-    navigate('/');
+  const confirmLogout = async () => {
+    try {
+      // Import the setLoggingOut function
+      const { setLoggingOut } = await import('@/hooks/use-user-data');
+      
+      // Helper functions to get all data
+      const getAllLocalStorage = (): Record<string, any> => {
+        const allData: Record<string, any> = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && !key.includes('hideout_user')) {
+            try {
+              const value = localStorage.getItem(key);
+              if (value) allData[key] = JSON.parse(value);
+            } catch (error) {
+              const value = localStorage.getItem(key);
+              if (value) allData[key] = value;
+            }
+          }
+        }
+        return allData;
+      };
+
+      const getAllCookies = (): Record<string, string> => {
+        const cookies: Record<string, string> = {};
+        const cookieString = document.cookie;
+        if (cookieString) {
+          cookieString.split(';').forEach(cookie => {
+            const [name, ...rest] = cookie.split('=');
+            cookies[name.trim()] = rest.join('=').trim();
+          });
+        }
+        return cookies;
+      };
+
+      // Save to account before clearing
+      const localStorageData = getAllLocalStorage();
+      const cookiesData = getAllCookies();
+      
+      const { supabase } = await import('@/integrations/supabase/client');
+      await (supabase as any).from('user_data').upsert({
+        user_id: user.id,
+        local_storage: localStorageData,
+        cookies: cookiesData
+      }, { onConflict: 'user_id' });
+
+      // Set flag to prevent auto-save during clear
+      setLoggingOut(true);
+      
+      // Small delay to ensure save completes
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Clear ALL data
+      const keysToRemove = Object.keys(localStorage).filter(key => !key.includes('hideout_user'));
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      Object.keys(cookiesData).forEach(name => {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      });
+
+      localStorage.removeItem('hideout_user');
+      sessionStorage.removeItem('hideout_user');
+      
+      toast.success("Logged out successfully - data saved to account");
+      setShowLogoutDialog(false);
+      onClose();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error("Logout failed");
+    }
   };
 
   const handleInspect = () => {
