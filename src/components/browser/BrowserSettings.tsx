@@ -6,10 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Settings } from "lucide-react";
 import { toast } from "sonner";
-import { useUserData } from "@/hooks/use-user-data";
 
 export const BrowserSettings = () => {
-  const { saveToAccount } = useUserData();
   const [homePage, setHomePage] = useState("hideout://newtab");
   const [usePreferredBrowser, setUsePreferredBrowser] = useState(true);
 

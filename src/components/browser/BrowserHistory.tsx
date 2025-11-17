@@ -14,6 +14,33 @@ interface BrowserHistoryProps {
 export const BrowserHistory = ({ history, onSelectUrl, onClearHistory }: BrowserHistoryProps) => {
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Check if incognito mode is enabled
+  const savedSettings = localStorage.getItem('hideout_settings');
+  let incognitoEnabled = false;
+  if (savedSettings) {
+    try {
+      const settings = JSON.parse(savedSettings);
+      incognitoEnabled = settings.incognitoMode || false;
+    } catch {}
+  }
+
+  // Show incognito message if enabled
+  if (incognitoEnabled) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-8">
+        <div className="max-w-5xl mx-auto">
+          <Card className="p-12 border-border/50 backdrop-blur-sm bg-card/80 text-center">
+            <History className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
+            <h2 className="text-2xl font-bold text-muted-foreground mb-2">Incognito Mode Enabled</h2>
+            <p className="text-muted-foreground">
+              History is disabled in incognito mode. Turn off incognito mode in Settings to access your browsing history.
+            </p>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   const filteredHistory = history.filter(item =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.url.toLowerCase().includes(searchQuery.toLowerCase())
