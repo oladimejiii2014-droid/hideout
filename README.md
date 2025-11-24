@@ -21,7 +21,7 @@ Deploy the `dist` folder to any static host.
 
 ## Contributing
 
-Add games, themes, or addons at [hideout-assets](https://github.com/Hideout-Network/hideout-assets)
+Add games, themes, addons, about:blank presets and more at [hideout-assets](https://github.com/Hideout-Network/hideout-assets)
 
 ## Links
 
