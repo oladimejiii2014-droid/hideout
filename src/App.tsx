@@ -16,6 +16,7 @@ import Settings from "./pages/Settings";
 import Browser from "./pages/Browser";
 import Changelog from "./pages/Changelog";
 import Addons from "./pages/Addons";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 import { StarBackground } from "./components/StarBackground";
 import { BatteryWarning } from "./components/BatteryWarning";
@@ -153,6 +154,7 @@ const App = () => {
             <Route path="/credits" element={<Credits />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/changelog" element={<Changelog />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
