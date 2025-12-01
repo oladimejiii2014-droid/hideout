@@ -17,6 +17,14 @@ Visit `http://localhost:8080`
 npm run build
 ```
 
+## .env File
+```bash
+VITE_SUPABASE_PROJECT_ID=""
+VITE_SUPABASE_PUBLISHABLE_KEY=""
+VITE_SUPABASE_URL=""
+VITE_GROQ_API_KEY=""
+```
+
 ## Contributing
 
 Add games, themes, or addons at [hideout-assets](https://github.com/Hideout-Network/hideout-assets)
