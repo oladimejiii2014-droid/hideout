@@ -597,6 +597,7 @@ const Games = () => {
             </div>
           </div>
         </main>
+        {shouldShowAds() && <StickyBottomBanner />}
       </div>
     );
   }
