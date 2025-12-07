@@ -9,6 +9,7 @@ import { GameLoader } from "@/components/GameLoader";
 import { BatteryWarning } from "@/components/BatteryWarning";
 import { FPSCounter } from "@/components/FPSCounter";
 import { GridBackground } from "@/components/GridBackground";
+import { StickyBottomBanner, shouldShowAds } from "@/components/AdManager";
 
 const ZONES_URLS = [
   "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json",
@@ -303,6 +304,7 @@ const GamePlayer = () => {
           </div>
         </div>
       </main>
+      {shouldShowAds() && <StickyBottomBanner />}
     </div>
   );
 };
